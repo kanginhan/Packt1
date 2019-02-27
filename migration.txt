@@ -1,0 +1,332 @@
+﻿IF OBJECT_ID(N'__EFMigrationsHistory') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+
+GO
+
+CREATE TABLE [AspNetRoles] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(256) NULL,
+    [NormalizedName] nvarchar(256) NULL,
+    [ConcurrencyStamp] nvarchar(max) NULL,
+    CONSTRAINT [PK_AspNetRoles] PRIMARY KEY ([Id])
+);
+
+GO
+
+CREATE TABLE [AspNetUsers] (
+    [Id] int NOT NULL IDENTITY,
+    [UserName] nvarchar(256) NULL,
+    [NormalizedUserName] nvarchar(256) NULL,
+    [Email] nvarchar(256) NULL,
+    [NormalizedEmail] nvarchar(256) NULL,
+    [EmailConfirmed] bit NOT NULL,
+    [PasswordHash] nvarchar(max) NULL,
+    [SecurityStamp] nvarchar(max) NULL,
+    [ConcurrencyStamp] nvarchar(max) NULL,
+    [PhoneNumber] nvarchar(max) NULL,
+    [PhoneNumberConfirmed] bit NOT NULL,
+    [TwoFactorEnabled] bit NOT NULL,
+    [LockoutEnd] datetimeoffset NULL,
+    [LockoutEnabled] bit NOT NULL,
+    [AccessFailedCount] int NOT NULL,
+    [FirstName] nvarchar(max) NULL,
+    [LastName] nvarchar(max) NULL,
+    CONSTRAINT [PK_AspNetUsers] PRIMARY KEY ([Id])
+);
+
+GO
+
+CREATE TABLE [AspNetRoleClaims] (
+    [Id] int NOT NULL IDENTITY,
+    [RoleId] int NOT NULL,
+    [ClaimType] nvarchar(max) NULL,
+    [ClaimValue] nvarchar(max) NULL,
+    CONSTRAINT [PK_AspNetRoleClaims] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_AspNetRoleClaims_AspNetRoles_RoleId] FOREIGN KEY ([RoleId]) REFERENCES [AspNetRoles] ([Id]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE TABLE [AspNetUserClaims] (
+    [Id] int NOT NULL IDENTITY,
+    [UserId] int NOT NULL,
+    [ClaimType] nvarchar(max) NULL,
+    [ClaimValue] nvarchar(max) NULL,
+    CONSTRAINT [PK_AspNetUserClaims] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_AspNetUserClaims_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE TABLE [AspNetUserLogins] (
+    [LoginProvider] nvarchar(450) NOT NULL,
+    [ProviderKey] nvarchar(450) NOT NULL,
+    [ProviderDisplayName] nvarchar(max) NULL,
+    [UserId] int NOT NULL,
+    CONSTRAINT [PK_AspNetUserLogins] PRIMARY KEY ([LoginProvider], [ProviderKey]),
+    CONSTRAINT [FK_AspNetUserLogins_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE TABLE [AspNetUserRoles] (
+    [UserId] int NOT NULL,
+    [RoleId] int NOT NULL,
+    CONSTRAINT [PK_AspNetUserRoles] PRIMARY KEY ([UserId], [RoleId]),
+    CONSTRAINT [FK_AspNetUserRoles_AspNetRoles_RoleId] FOREIGN KEY ([RoleId]) REFERENCES [AspNetRoles] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_AspNetUserRoles_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE TABLE [AspNetUserTokens] (
+    [UserId] int NOT NULL,
+    [LoginProvider] nvarchar(450) NOT NULL,
+    [Name] nvarchar(450) NOT NULL,
+    [Value] nvarchar(max) NULL,
+    CONSTRAINT [PK_AspNetUserTokens] PRIMARY KEY ([UserId], [LoginProvider], [Name]),
+    CONSTRAINT [FK_AspNetUserTokens_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE INDEX [IX_AspNetRoleClaims_RoleId] ON [AspNetRoleClaims] ([RoleId]);
+
+GO
+
+CREATE UNIQUE INDEX [RoleNameIndex] ON [AspNetRoles] ([NormalizedName]);
+
+GO
+
+CREATE INDEX [IX_AspNetUserClaims_UserId] ON [AspNetUserClaims] ([UserId]);
+
+GO
+
+CREATE INDEX [IX_AspNetUserLogins_UserId] ON [AspNetUserLogins] ([UserId]);
+
+GO
+
+CREATE INDEX [IX_AspNetUserRoles_RoleId] ON [AspNetUserRoles] ([RoleId]);
+
+GO
+
+CREATE INDEX [EmailIndex] ON [AspNetUsers] ([NormalizedEmail]);
+
+GO
+
+CREATE UNIQUE INDEX [UserNameIndex] ON [AspNetUsers] ([NormalizedUserName]);
+
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20190209061131_Initial', N'2.2.1-servicing-10028');
+
+GO
+
+CREATE TABLE [Products] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [Slug] nvarchar(450) NOT NULL,
+    [Thumbnail] nvarchar(max) NOT NULL,
+    [ShortDescription] nvarchar(max) NOT NULL,
+    [Description] nvarchar(max) NOT NULL,
+    [Price] decimal(18, 2) NOT NULL,
+    CONSTRAINT [PK_Products] PRIMARY KEY ([Id])
+);
+
+GO
+
+CREATE UNIQUE INDEX [IX_Products_Slug] ON [Products] ([Slug]);
+
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20190209102628_ProductEntity', N'2.2.1-servicing-10028');
+
+GO
+
+EXEC sp_rename N'Products.Price', N'TalkTime', N'COLUMN';
+
+GO
+
+ALTER TABLE [Products] ADD [BrandId] int NOT NULL DEFAULT 0;
+
+GO
+
+ALTER TABLE [Products] ADD [OSId] int NOT NULL DEFAULT 0;
+
+GO
+
+ALTER TABLE [Products] ADD [ScreenSize] decimal(18, 2) NOT NULL DEFAULT 0.0;
+
+GO
+
+ALTER TABLE [Products] ADD [StandbyTime] decimal(18, 2) NOT NULL DEFAULT 0.0;
+
+GO
+
+CREATE TABLE [Brands] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    CONSTRAINT [PK_Brands] PRIMARY KEY ([Id])
+);
+
+GO
+
+CREATE TABLE [Colours] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    CONSTRAINT [PK_Colours] PRIMARY KEY ([Id])
+);
+
+GO
+
+CREATE TABLE [Features] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    CONSTRAINT [PK_Features] PRIMARY KEY ([Id])
+);
+
+GO
+
+CREATE TABLE [Images] (
+    [Id] int NOT NULL IDENTITY,
+    [ProductId] int NOT NULL,
+    [Url] nvarchar(max) NOT NULL,
+    CONSTRAINT [PK_Images] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Images_Products_ProductId] FOREIGN KEY ([ProductId]) REFERENCES [Products] ([Id]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE TABLE [OS] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    CONSTRAINT [PK_OS] PRIMARY KEY ([Id])
+);
+
+GO
+
+CREATE TABLE [Storage] (
+    [Id] int NOT NULL IDENTITY,
+    [Capacity] int NOT NULL,
+    CONSTRAINT [PK_Storage] PRIMARY KEY ([Id])
+);
+
+GO
+
+CREATE TABLE [ProductFeatures] (
+    [ProductId] int NOT NULL,
+    [FeatureId] int NOT NULL,
+    CONSTRAINT [PK_ProductFeatures] PRIMARY KEY ([ProductId], [FeatureId]),
+    CONSTRAINT [FK_ProductFeatures_Features_FeatureId] FOREIGN KEY ([FeatureId]) REFERENCES [Features] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_ProductFeatures_Products_ProductId] FOREIGN KEY ([ProductId]) REFERENCES [Products] ([Id]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE TABLE [ProductVariants] (
+    [ProductId] int NOT NULL,
+    [ColourId] int NOT NULL,
+    [StorageId] int NOT NULL,
+    [Price] decimal(18, 2) NOT NULL,
+    CONSTRAINT [PK_ProductVariants] PRIMARY KEY ([ProductId], [ColourId], [StorageId]),
+    CONSTRAINT [FK_ProductVariants_Colours_ColourId] FOREIGN KEY ([ColourId]) REFERENCES [Colours] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_ProductVariants_Products_ProductId] FOREIGN KEY ([ProductId]) REFERENCES [Products] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_ProductVariants_Storage_StorageId] FOREIGN KEY ([StorageId]) REFERENCES [Storage] ([Id]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE INDEX [IX_Products_BrandId] ON [Products] ([BrandId]);
+
+GO
+
+CREATE INDEX [IX_Products_OSId] ON [Products] ([OSId]);
+
+GO
+
+CREATE INDEX [IX_Images_ProductId] ON [Images] ([ProductId]);
+
+GO
+
+CREATE INDEX [IX_ProductFeatures_FeatureId] ON [ProductFeatures] ([FeatureId]);
+
+GO
+
+CREATE INDEX [IX_ProductVariants_ColourId] ON [ProductVariants] ([ColourId]);
+
+GO
+
+CREATE INDEX [IX_ProductVariants_StorageId] ON [ProductVariants] ([StorageId]);
+
+GO
+
+ALTER TABLE [Products] ADD CONSTRAINT [FK_Products_Brands_BrandId] FOREIGN KEY ([BrandId]) REFERENCES [Brands] ([Id]) ON DELETE CASCADE;
+
+GO
+
+ALTER TABLE [Products] ADD CONSTRAINT [FK_Products_OS_OSId] FOREIGN KEY ([OSId]) REFERENCES [OS] ([Id]) ON DELETE CASCADE;
+
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20190210133301_Catalogue', N'2.2.1-servicing-10028');
+
+GO
+
+CREATE TABLE [Orders] (
+    [Id] int NOT NULL IDENTITY,
+    [UserId] int NOT NULL,
+    [Placed] datetime2 NOT NULL,
+    [DeliveryAddress_FirstName] nvarchar(max) NOT NULL,
+    [DeliveryAddress_LastName] nvarchar(max) NOT NULL,
+    [DeliveryAddress_Address1] nvarchar(max) NOT NULL,
+    [DeliveryAddress_Address2] nvarchar(max) NULL,
+    [DeliveryAddress_TownCity] nvarchar(max) NOT NULL,
+    [DeliveryAddress_County] nvarchar(max) NOT NULL,
+    [DeliveryAddress_Postcode] nvarchar(max) NOT NULL,
+    [PaymentStatus] int NOT NULL,
+    CONSTRAINT [PK_Orders] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Orders_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE TABLE [OrderItem] (
+    [Id] int NOT NULL IDENTITY,
+    [OrderId] int NOT NULL,
+    [ProductId] int NOT NULL,
+    [ColourId] int NOT NULL,
+    [StorageId] int NOT NULL,
+    [Quantity] int NOT NULL,
+    CONSTRAINT [PK_OrderItem] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_OrderItem_Orders_OrderId] FOREIGN KEY ([OrderId]) REFERENCES [Orders] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_OrderItem_ProductVariants_ProductId_ColourId_StorageId] FOREIGN KEY ([ProductId], [ColourId], [StorageId]) REFERENCES [ProductVariants] ([ProductId], [ColourId], [StorageId]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE INDEX [IX_OrderItem_OrderId] ON [OrderItem] ([OrderId]);
+
+GO
+
+CREATE INDEX [IX_OrderItem_ProductId_ColourId_StorageId] ON [OrderItem] ([ProductId], [ColourId], [StorageId]);
+
+GO
+
+CREATE INDEX [IX_Orders_UserId] ON [Orders] ([UserId]);
+
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20190221034924_Orders', N'2.2.1-servicing-10028');
+
+GO
+
