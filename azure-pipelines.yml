@@ -19,7 +19,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     SourceFolder: $(Build.SourcesDirectory)
-    Contents: '**\*'
+    Contents: '**\bin\$(BuildConfiguration)\**'
     targetFolder: $(Build.ArtifactStagingDirectory)
     
 
@@ -28,4 +28,3 @@ steps:
     pathtoPublish: $(Build.ArtifactStagingDirectory)
     artifactName: MyBuildOutputs
     publishLocation: Container
-    TargetPath: $(Build.ArtifactStagingDirectory)
